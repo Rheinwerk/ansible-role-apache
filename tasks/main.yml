@@ -5,6 +5,10 @@
   with_items:
     - apache2
 
+- name: Install PHP
+  apt: pkg=libapache2-mod-php5 state=present
+  when: _apache.addons.php is defined
+
 - name: Stop Apache for Reconfiguration
   service: name=apache2 state=stopped
 

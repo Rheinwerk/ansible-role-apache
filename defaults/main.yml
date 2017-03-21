@@ -2,6 +2,7 @@
 
 _apache:
   use_default_config: yes
+  addons: []
   listen:
     - { ip: localhost, port: 80 }
     - { ip: localhost, port: 443, ssl: True }

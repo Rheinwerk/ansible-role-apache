@@ -6,6 +6,8 @@
     RW_APT_CACHE_UPDATE: yes
     APACHE:
       use_default_config: False
+      addons:
+        php: True
       listen:
         - { ip: localhost, port: 80 }
         - { ip: localhost, port: 443, ssl: True }
