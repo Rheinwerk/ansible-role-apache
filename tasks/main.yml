@@ -1,0 +1,49 @@
+---
+
+- name: Install Apache
+  apt: pkg={{ item }} state=present
+  with_items:
+    - apache2
+
+- name: Stop Apache for Reconfiguration
+  service: name=apache2 state=stopped
+
+- name: Set listen bindings
+  template: src=etc/apache2/ports.conf.j2 dest=/etc/apache2/ports.conf owner=root group=root mode=0644
+
+- name: Check if 000-default site is enabled
+  command: a2query -s 000-default
+  register: a2query
+  failed_when: a2query.rc != 0 and a2query.rc != 32
+  check_mode: no
+
+- name: Activate default site
+  command: a2ensite 000-default
+  when: _apache.use_default_config == True and a2query.rc == 32
+
+- name: Disable default site
+  command: a2dissite 000-default
+  when: _apache.use_default_config == False and a2query.rc == 0
+
+- include: secure_installation.yml
+
+- name: Disable Modules
+  apache2_module: name={{ item }} state=absent
+  with_items: "{{ _apache.modules.disable }}"
+
+- name: Enable Modules
+  apache2_module: name={{ item }} state=present
+  with_items: "{{ _apache.modules.enable }}"
+
+- name: Create sites
+  template: src=etc/apache2/sites-available/vsite.conf.j2 dest=/etc/apache2/sites-available/{{ item.name }}.conf owner=root group=root mode=0644
+  with_items: "{{ _apache.sites }}"
+  notify:
+    - Restart Apache
+
+- name: Toogle sites
+  command: "{% if item.enabled == True %}a2ensite{% else %}a2dissite{% endif %} {{ item.name }}"
+  with_items: "{{ _apache.sites }}"
+  notify:
+    - Restart Apache
+
