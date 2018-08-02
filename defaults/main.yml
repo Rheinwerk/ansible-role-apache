@@ -1,5 +1,4 @@
 ---
-
 _apache:
   use_default_config: yes
   addons: []
@@ -9,4 +8,3 @@ _apache:
   modules:
     disable: []
     enable: []
-

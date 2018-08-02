@@ -9,15 +9,15 @@
       addons:
         php: True
       listen:
-        - { ip: localhost, port: 80 }
-        - { ip: localhost, port: 443, ssl: True }
+        - { ip: "localhost", port: 80 }
+        - { ip: "localhost", port: 443, ssl: true }
       modules:
         disable: []
         enable:
           - rewrite
       sites:
         - name: www.example.com
-          enabled: True
+          enabled: true
           vhost: localhost
           port: 80
           document_root: /home/www
@@ -32,4 +32,3 @@
       file: path=/home/www state=directory
   roles:
     - { role: ansible-role-apache, tags: ['apache'], _apache: "{{ APACHE }}" }
-

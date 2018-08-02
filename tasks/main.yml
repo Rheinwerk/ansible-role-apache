@@ -1,19 +1,39 @@
 ---
-
 - name: Install Apache
-  apt: pkg={{ item }} state=present
-  with_items:
-    - apache2
+  apt:
+    pkg: "apache2"
+    state: present
 
-- name: Install PHP
-  apt: pkg=libapache2-mod-php5 state=present
+
+- block:
+    - set_fact:
+        php_module_pkg: "libapache2-mod-php7.2"
+        when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('18.04', '==')
+
+    - set_fact:
+        php_module_pkg: "libapache2-mod-php5"
+        when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('14.04', '==')
+
+    - name: Install PHP module
+      apt:
+        pkg: "{{ php_module_pkg }}"
+        state: present
+
   when: _apache.addons.php is defined
 
+
 - name: Stop Apache for Reconfiguration
-  service: name=apache2 state=stopped
+  service:
+    name: apache2
+    state: stopped
 
 - name: Set listen bindings
-  template: src=etc/apache2/ports.conf.j2 dest=/etc/apache2/ports.conf owner=root group=root mode=0644
+  template:
+    src: etc/apache2/ports.conf.j2
+    dest: /etc/apache2/ports.conf
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Check if 000-default site is enabled
   command: a2query -s 000-default
@@ -32,15 +52,24 @@
 - include: secure_installation.yml
 
 - name: Disable Modules
-  apache2_module: name={{ item }} state=absent
+  apache2_module:
+    name: "{{ item }}"
+    state: absent
   with_items: "{{ _apache.modules.disable }}"
 
 - name: Enable Modules
-  apache2_module: name={{ item }} state=present
+  apache2_module:
+    name: "{{ item }}"
+    state: present
   with_items: "{{ _apache.modules.enable }}"
 
 - name: Create sites
-  template: src=etc/apache2/sites-available/vsite.conf.j2 dest=/etc/apache2/sites-available/{{ item.name }}.conf owner=root group=root mode=0644
+  template:
+    src: "etc/apache2/sites-available/vsite.conf.j2"
+    dest: "/etc/apache2/sites-available/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: 0644
   with_items: "{{ _apache.sites }}"
   notify:
     - Restart Apache
@@ -50,4 +79,3 @@
   with_items: "{{ _apache.sites }}"
   notify:
     - Restart Apache
-

@@ -15,11 +15,13 @@ addons:
 install:
   # Install ansible
   - pip install ansible
+  - pip install yamllint
 
   # Check ansible version
   - ansible --version
 
 script:
+  - "find . -name '*.yml' -print0 | xargs -0 yamllint -c galaxy-yamllint.yaml"
   # Basic role syntax check
   - cd tests; ansible-playbook test.yml -i inventory --syntax-check
   - cd tests; ./run_tests.sh
