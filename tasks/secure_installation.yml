@@ -1,5 +1,4 @@
 ---
-
 - block:
   - name: Deactivate TRACE Method
     lineinfile: dest=/etc/apache2/conf-available/security.conf regexp='^TraceEnable' line='TraceEnable Off' insertafter='.*TraceEnable' owner=root group=root mode=0644
@@ -49,4 +48,3 @@
     lineinfile: dest=/etc/apache2/mods-available/ssl.conf regexp='^\s*SSLCipherSuite' line='SSLCipherSuite ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:RC4+RSA:+HIGH:+MEDIUM' owner=root group=root mode=0644
     notify:
       - Restart Apache
-

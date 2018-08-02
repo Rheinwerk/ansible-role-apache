@@ -1,5 +1,4 @@
 ---
-
 - name: Install Apache
   apt: pkg={{ item }} state=present
   with_items:
@@ -50,4 +49,3 @@
   with_items: "{{ _apache.sites }}"
   notify:
     - Restart Apache
-
