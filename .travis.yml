@@ -26,10 +26,10 @@ install:
 
   # Check ansible version
   - ansible --version
-  - 'dpkg -l | grep "^hi"'
+  - 'dpkg -l | grep "^hi" || /bin/true'
   - apt-get update
   - apt-get dist-upgrade
-  - 'dpkg -l | grep "^hi"'
+  - 'dpkg -l | grep "^hi" || /bin/true'
 
 script:
   - sudo apt list --upgradable
