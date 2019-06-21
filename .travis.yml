@@ -7,9 +7,11 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
+      python: "2.7"
     - os: linux
       dist: bionic
       sudo: required
+      python: "3.7"
 
 # Install ansible
 addons:
@@ -26,6 +28,7 @@ install:
   - ansible --version
 
 script:
+  - sudo apt list --upgradable
   - "find . -name '*.yml' -print0 | xargs -0 yamllint -c galaxy-yamllint.yaml"
   # Basic role syntax check
   - cd tests
