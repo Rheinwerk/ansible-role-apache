@@ -2,9 +2,14 @@
 language: python
 python: "2.7"
 
-# Use the new container infrastructure
-sudo: required
-dist: trusty
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: trusty
+    - os: linux
+      dist: bionic
+      sudo: required
 
 # Install ansible
 addons:
@@ -23,8 +28,9 @@ install:
 script:
   - "find . -name '*.yml' -print0 | xargs -0 yamllint -c galaxy-yamllint.yaml"
   # Basic role syntax check
-  - cd tests; ansible-playbook test.yml -i inventory --syntax-check
-  - cd tests; ./run_tests.sh
+  - cd tests
+  - ansible-playbook test.yml -i inventory --syntax-check
+  - ./run_tests.sh
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
