@@ -8,11 +8,11 @@
 - block:
     - set_fact:
         php_module_pkg: "libapache2-mod-php7.2"
-        when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('18.04', '==')
+      when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('18.04', '==')
 
     - set_fact:
         php_module_pkg: "libapache2-mod-php5"
-        when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('14.04', '==')
+      when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('14.04', '==')
 
     - name: Install PHP module
       apt:
