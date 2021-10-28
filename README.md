@@ -3,6 +3,8 @@ apache
 
 Installs and configures apache.
 
+[![CI](https://github.com/Rheinwerk/ansible-role-apache/actions/workflows/ci.yml/badge.svg)](https://github.com/Rheinwerk/ansible-role-apache/actions/workflows/ci.yml)
+
 Requirements
 ------------
 
