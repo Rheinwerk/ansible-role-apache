@@ -5,6 +5,7 @@
     state: present
 
 - name: Install Apache PHP addons
+  when: _apache.addons.php is defined
   block:
     - name: Set 18.04 php_module_pkg fact
       set_fact:
@@ -20,9 +21,6 @@
       apt:
         pkg: "{{ php_module_pkg }}"
         state: present
-
-  when: _apache.addons.php is defined
-
 
 - name: Stop Apache for Reconfiguration
   service:
