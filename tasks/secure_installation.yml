@@ -1,5 +1,6 @@
 ---
-- block:
+- name: Main block
+  block:
   - name: Deactivate TRACE Method
     lineinfile:
       dest: "/etc/apache2/conf-available/security.conf"
@@ -24,11 +25,13 @@
     notify:
     - Restart Apache
 
-  - set_fact:
+  - name: Set 18.04 php_config_path fact
+    set_fact:
       php_config_path: "/etc/php/7.2/apache2/php.ini"
     when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('18.04', '==')
 
-  - set_fact:
+  - name: Set 14.04 php_config_path fact
+    set_fact:
       php_config_path: "/etc/php5/apache2/php.ini"
     when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('14.04', '==')
 
@@ -59,6 +62,7 @@
   - name: Check if security configuration is enabled
     command: a2query -c security
     register: a2query
+    changed_when: false
     failed_when: a2query.rc != 0 and a2query.rc != 32
     check_mode: no
 
@@ -68,7 +72,8 @@
     notify:
     - Restart Apache
 
-- block:
+- name: Update apache2 mod ssl config
+  block:
   - name: Set SSL to TLSv1.2 only
     lineinfile:
       dest: "/etc/apache2/mods-available/ssl.conf"
