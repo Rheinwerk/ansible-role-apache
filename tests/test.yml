@@ -29,6 +29,6 @@
             </Directory>
   pre_tasks:
     - name: Create document_root
-      file: path=/home/www state=directory
+      ansible.builtin.file: path=/home/www state=directory
   roles:
     - { role: ansible-role-apache, tags: ['apache'], _apache: "{{ APACHE }}" }

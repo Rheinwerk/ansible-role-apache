@@ -2,7 +2,7 @@
 - name: Main block
   block:
   - name: Deactivate TRACE Method
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "/etc/apache2/conf-available/security.conf"
       regexp: '^TraceEnable'
       line: 'TraceEnable Off'
@@ -14,7 +14,7 @@
     - Restart Apache
 
   - name: Deactivate Apache Signature
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "/etc/apache2/conf-available/security.conf"
       regexp: '^ServerSignature'
       line: 'ServerSignature Off'
@@ -26,17 +26,17 @@
     - Restart Apache
 
   - name: Set 18.04 php_config_path fact
-    set_fact:
+    ansible.builtin.set_fact:
       php_config_path: "/etc/php/7.2/apache2/php.ini"
     when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('18.04', '==')
 
   - name: Set 14.04 php_config_path fact
-    set_fact:
+    ansible.builtin.set_fact:
       php_config_path: "/etc/php5/apache2/php.ini"
     when: ansible_lsb.id|lower == "ubuntu" and ansible_distribution_version is version_compare('14.04', '==')
 
   - name: Deactivate PHP Signature
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "{{ php_config_path }}"
       regexp: "^expose_php"
       line: "expose_php = Off"
@@ -48,7 +48,7 @@
     - Restart Apache
 
   - name: Set Server Banner to Prod
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: /etc/apache2/conf-available/security.conf
       regexp: '^ServerTokens'
       line: 'ServerTokens Prod'
@@ -60,14 +60,14 @@
     - Restart Apache
 
   - name: Check if security configuration is enabled
-    command: a2query -c security
+    ansible.builtin.command: a2query -c security
     register: a2query
     changed_when: false
     failed_when: a2query.rc != 0 and a2query.rc != 32
     check_mode: no
 
   - name: Enable security configuration
-    command: a2enconf security
+    ansible.builtin.command: a2enconf security
     when: a2query.rc == 32
     notify:
     - Restart Apache
@@ -75,14 +75,14 @@
 - name: Update apache2 mod ssl config
   block:
   - name: Set SSL to TLSv1.2 only
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "/etc/apache2/mods-available/ssl.conf"
       regexp: '^\s*SSLProtocol'
       line: 'SSLProtocol -ALL +TLSv1.2'
     notify:
       - Restart Apache
   - name: Set secure Cipher Suites
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "/etc/apache2/mods-available/ssl.conf"
       regexp: '^\s*SSLCipherSuite'
       line: 'SSLCipherSuite HIGH:!aNULL'
